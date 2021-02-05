@@ -1,0 +1,2 @@
+# MazeMT
+Minetest Maze Game
