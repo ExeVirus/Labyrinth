@@ -152,10 +152,9 @@ end
 local function backTrack(chain, point)
     for i=#chain,1,-1 do
         if point == chain[i] then
-            table.remove()
             return point, chain
         else
-            table.remove()
+            table.remove(chain)
         end
     end
     error("it was onChain, but not found....")
@@ -180,6 +179,7 @@ local function wilsonsAlgo(maze,view)
             table.insert(chain,next_point)
             maze = addChain(maze,chain,1) --maze is updated hopefully inside here
             current_point = findNextStarting(maze)
+            last_dir = 2
             chain = { current_point }
             if current_point == nil then
                 return --we're done!
@@ -241,4 +241,3 @@ end
 local maze = Generate_Maze(21,21,"true") --Only odd sizes allowed
 os.execute("cls")
 viewMaze(maze)
-
