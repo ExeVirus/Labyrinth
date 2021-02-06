@@ -50,60 +50,61 @@ local function getNextPoint(current_point,height,width,last_dir)
     --keep trying till we get a valid direction
     while(1) do
         local dir = math.random(3)
-        if last_dir == 1 then --west
+        if last_dir == 3 then --east
+            
             if dir == 1 then --north
-                if current_point[2]-2 > 0 then
-                    return {current_point[1],current_point[2]-2}, 2
+                if current_point[1]-2 > 0 then
+                    return {current_point[1]-2,current_point[2]}, 2
                 end
             elseif dir == 2 then --east
-                if current_point[1]+2 <= width then
-                    return {current_point[1]+2,current_point[2]}, 3
+                if current_point[2]+2 <= width then
+                    return {current_point[1],current_point[2]+2}, 3
                 end
             else --south
-                if current_point[2]+2 <= height then
-                    return {current_point[1],current_point[2]+2}, 4
+                if current_point[1]+2 <= height then
+                    return {current_point[1]+2,current_point[2]}, 4
                 end
             end
-        elseif last_dir == 2 then --north
+        elseif last_dir == 4 then --south
             if dir == 1 then --east
-                if current_point[1]+2 <= width then
-                    return {current_point[1]+2,current_point[2]}, 3
+                if current_point[2]+2 <= width then
+                    return {current_point[1],current_point[2]+2}, 3
                 end
             elseif dir == 2 then --south
-                if current_point[2]+2 <= height then
-                    return {current_point[1],current_point[2]+2}, 4
+                if current_point[1]+2 <= height then
+                    return {current_point[1]+2,current_point[2]}, 4
                 end
             else --west
-                if current_point[1]-2 > 0 then
-                    return {current_point[1]-2,current_point[2]}, 1
+                if current_point[2]-2 > 0 then
+                    return {current_point[1],current_point[2]-2}, 1
                 end
             end
-        elseif last_dir == 3 then
+        elseif last_dir == 1 then --west
             if dir == 1 then --south
-                if current_point[2]+2 <= height then
-                    return {current_point[1],current_point[2]+2}, 4
+                if current_point[1]+2 <= height then
+                    return {current_point[1]+2,current_point[2]}, 4
                 end
             elseif dir == 2 then --west
-                if current_point[1]-2 > 0 then
-                    return {current_point[1]-2,current_point[2]}, 1
+                if current_point[2]-2 > 0 then
+                    return {current_point[1],current_point[2]-2}, 1
                 end
             else --north
-                if current_point[2]-2 > 0 then
-                    return {current_point[1],current_point[2]-2}, 2
+                if current_point[1]-2 > 0 then
+                    return {current_point[1]-2,current_point[2]}, 2
                 end
             end
-        else
+        else --north
             if dir == 1 then --west
-                if current_point[1]-2 > 0 then
-                    return {current_point[1]-2,current_point[2]}, 1
+                if current_point[2]-2 > 0 then
+                    return {current_point[1],current_point[2]-2}, 1
                 end
             elseif dir == 2 then --north
-                if current_point[2]-2 > 0 then
-                    return {current_point[1],current_point[2]-2}, 2
+                if current_point[1]-2 > 0 then
+                    return {current_point[1]-2,current_point[2]}, 2
                 end
             else --east
-                if current_point[1]+2 <= width then
-                    return {current_point[1]+2,current_point[2]}, 3
+                if current_point[2]+2 <= width then
+                    return {current_point[1],current_point[2]+2}, 3
                 end
             end
         end
@@ -144,17 +145,17 @@ end
 
 local function onChain(chain,point)
     for _,v in pairs(chain) do
-        if point == v then return true end
+        if point[1] == v[1] and point[2] == v[2] then return true end
     end
     return false
 end
 
 local function backTrack(chain, point)
     for i=#chain,1,-1 do
-        if point == chain[i] then
+        if point[1] == chain[i][1] and point[2] == chain[i][2] then
             return point, chain
         else
-            table.remove(chain)
+            table.remove(chain,i)
         end
     end
     error("it was onChain, but not found....")
@@ -167,12 +168,13 @@ function sleep(n)  -- seconds
 end
 
 local function wilsonsAlgo(maze,view)
-    local view_count_down = 3
+    local view_count_down = 1
     local current_point = findNextStarting(maze)
     local last_dir = 2 --1 = west, 2 = north, 3=east, 4=south
+    local next_point = {}
     local chain = { current_point }
     while(1) do --exited with return statement
-        local next_point, last_dir = getNextPoint(current_point,maze.height,maze.width,last_dir)
+        next_point, last_dir = getNextPoint(current_point,maze.height,maze.width,last_dir)
         if onChain(chain,next_point) then
             current_point, chain = backTrack(chain,next_point)
         elseif maze[next_point[1]][next_point[2]] == 1 then
@@ -194,7 +196,7 @@ local function wilsonsAlgo(maze,view)
                 os.execute("cls")
                 viewMaze(maze, chain)
                 sleep(1)
-                view_count_down = 3
+                view_count_down = 5
             end
         end
     end
@@ -228,8 +230,10 @@ local function Generate_Maze(width, height, view)
     maze.height = height
 --initialize first point
     math.randomseed(os.time())
-    local spot = findNextStarting(maze)
-    maze[spot[1]][spot[2]] = 1
+    local x = math.random(math.floor(width/2))*2+1 
+    local y = math.random(math.floor(height/2))*2+1
+    --local spot = findNextStarting(maze)
+    maze[y][x] = 1
     
 --Execute Algorithm
     wilsonsAlgo(maze, view)
@@ -238,6 +242,6 @@ local function Generate_Maze(width, height, view)
     return maze
 end
 
-local maze = Generate_Maze(21,21,"true") --Only odd sizes allowed
+local maze = Generate_Maze(531,251,"false") --Only odd sizes allowed
 os.execute("cls")
 viewMaze(maze)
