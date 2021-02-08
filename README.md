@@ -1,4 +1,11 @@
-# MazeMT
-Minetest Maze Game
+# Labyrinth
+![screenshot](screenshot.jpg)
+## An aMAZEing Minetest game
 
-See maze.lua.
+##VERSION 0.1
+
+This is very much a work in progress, technically quite playable though. 
+
+Just escape the maze to "win" and you'll be greeted with a new one to complete!
+
+
