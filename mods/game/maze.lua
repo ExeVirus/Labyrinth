@@ -1,7 +1,7 @@
 --[[
 Maze.lua
 
-MIT License
+MIT License, ExeVirus (c) 2021
 
 Implements wilsons's algorithm in lua
 
@@ -23,9 +23,8 @@ table {
 which cnotains 1's for path and 0's for walls.
 
 ]]
---os.execute("cls")
 
-function copy(obj, seen)
+local function copy(obj, seen)
   if type(obj) ~= 'table' then return obj end
   if seen and seen[obj] then return seen[obj] end
   local s = seen or {}
@@ -111,11 +110,6 @@ local function getNextPoint(current_point,height,width,last_dir)
     end
 end
 
-local function PrintUsage()
-print("no valid width or height specified, please run maze.lua like so:")
-print("luajit maze.lua 5 5 (optional 'true'/'false')")
-end
-
 local function addChain(maze,chain,value)
     maze[chain[1][1]][chain[1][2]] = value
     local last_point = chain[1]
@@ -162,7 +156,7 @@ local function backTrack(chain, point)
 end
 
 local clock = os.clock
-function sleep(n)  -- seconds
+local function sleep(n)  -- seconds
   local t0 = clock()
   while clock() - t0 <= n do end
 end
@@ -214,8 +208,7 @@ local function Generate_Maze(width, height, view)
         view = false
     else
         if     view == "false" then view = false
-        elseif view == "true" then view = true
-        else   return {} end
+        elseif view == "true" then view = true end
     end
 
 --Generate Empty maze
@@ -242,6 +235,4 @@ local function Generate_Maze(width, height, view)
     return maze
 end
 
-local maze = Generate_Maze(531,251,"false") --Only odd sizes allowed
-os.execute("cls")
-viewMaze(maze)
+return Generate_Maze --return the generate Maze function
