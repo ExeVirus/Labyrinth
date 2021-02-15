@@ -32,3 +32,6 @@ Just escape the maze to "win" and you'll be greeted with a new one to complete!
 7. Implement invisible nodes that channel a falling player into the map, for these styles, as that will allow them to safely see every map they fall in.
 
 8. Add a way to let them provide their own seed in the main menu for the maze generation.
+
+9. Override the default HUD
+
