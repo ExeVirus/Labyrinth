@@ -26,7 +26,7 @@ Just escape the maze to "win" and you'll be greeted with a new one to complete!
 
 4. Implement Win for "singleplayer" (chat message + sound) that will greet them with the main menu again, and clean up the last map.
 
-5. Implement Main menu music.
+5. Implement Main menu music. (sunth base?)
 
 6. Implement at least 4 default styles with their own music
 
