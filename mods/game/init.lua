@@ -53,8 +53,9 @@ minetest.register_item(":", {
 
 
 
---classic style registration
+--Style Registrations
 dofile(minetest.get_modpath("game") .. "/styles/classic.lua")
+dofile(minetest.get_modpath("game") .. "/styles/grassy.lua")
 
 local restart = styles[1].gen_map
 local cleanup = styles[1].cleanup
