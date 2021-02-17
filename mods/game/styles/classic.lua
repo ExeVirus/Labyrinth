@@ -134,4 +134,4 @@ local function cleanup(width, height)
     vm:write_to_map(true)
 end
 
-register_style("classic", map_function, cleanup)
+register_style("classic","classic", map_function, cleanup)

@@ -210,7 +210,6 @@ local function Generate_Maze(width, height, view)
         if     view == "false" then view = false
         elseif view == "true" then view = true end
     end
-
 --Generate Empty maze
     local maze = {}
     for i=1,height do
