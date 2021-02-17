@@ -6,6 +6,8 @@
 --
 --
 
+minetest.settings:set("enable_damage","false")
+
 local GenMaze = dofile(minetest.get_modpath("game") .. "/maze.lua")
 
 --Style registrations
