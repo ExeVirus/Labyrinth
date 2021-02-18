@@ -20,7 +20,7 @@ table {
     {0,1,0,1,0},
 }
 
-which cnotains 1's for path and 0's for walls.
+which contains 1's for path and 0's for walls.
 
 ]]
 
@@ -222,8 +222,8 @@ local function Generate_Maze(width, height, view)
     maze.height = height
 --initialize first point
     math.randomseed(os.time())
-    local x = math.random(math.floor(width/2))*2+1 
-    local y = math.random(math.floor(height/2))*2+1
+    local x = math.random(math.floor(width/2)-1)*2+1 
+    local y = math.random(math.floor(height/2)-1)*2+1
     --local spot = findNextStarting(maze)
     maze[y][x] = 1
     

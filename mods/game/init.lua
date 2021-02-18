@@ -66,7 +66,7 @@ local selectedStyle = 1
 local first_load = false
 local function setup(player)
     --Load up the level
-    local maze = GenMaze(math.floor(gwidth/2)+math.floor(gwidth/2)%2+1,math.floor(gheight/2)+math.floor(gheight/2)%2+1)
+    local maze = GenMaze(math.floor(gwidth/2)*2+((gwidth+1)%2),math.floor(gheight/2)*2+(gheight+1)%2)
     restart = styles[selectedStyle].gen_map
     cleanup = styles[selectedStyle].cleanup
     restart(maze, player)
@@ -185,7 +185,7 @@ local function onRecieveFields(player, formname, fields)
         if fields.game_menu then
             minetest.after(0.05, function() to_game_menu(player) end)
         elseif fields.restart then
-            local maze = GenMaze(math.floor(gwidth/2)+math.floor(gwidth/2)%2+1,math.floor(gheight/2)+math.floor(gheight/2)%2+1)
+            local maze = GenMaze(math.floor(gwidth/2)*2+((gwidth+1)%2),math.floor(gheight/2)*2+(gheight+1)%2)
             restart(maze, player)
         end
         return
