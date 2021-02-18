@@ -21,7 +21,7 @@ local function map_function(maze, player)
 
     --Copy to the map
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=width+1,y=4,z=height+1})
+    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height+1,y=4,z=width+1})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
@@ -31,15 +31,6 @@ local function map_function(maze, player)
     local wall =     minetest.get_content_id("game:classic_wall")
     local invisble = minetest.get_content_id("game:inv")
     local air =      minetest.get_content_id("air")
-    
-    --Generally a good idea to zero it out
-    for z=0, width+1 do --z
-        for y=0,4 do --
-            for x=0, height+1 do --x
-                data[a:index(x, y, z)] = air
-            end
-        end
-    end
     
     --Set up the level itself
     for z=1, width do --z
@@ -57,8 +48,8 @@ local function map_function(maze, player)
     vm:write_to_map(true)
     
     --player target coords
-    player_x = math.floor(width/2)+width%2
-    player_z = math.floor(height/2)+width%2
+    player_x = math.floor(height/2)+height%2
+    player_z = math.floor(width/2)+width%2
     
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
@@ -90,7 +81,7 @@ end
 local function cleanup(width, height)
     --Copy to the map
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=width+1,y=4,z=height+1})
+    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height+1,y=4,z=width+1})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
@@ -113,8 +104,8 @@ local function cleanup(width, height)
     vm:write_to_map(true)
     
     --player target coords
-    player_x = math.floor(width/2)+math.floor(width/2)%2+1
-    player_z = math.floor(height/2)+math.floor(width/2)%2+1
+    player_x = math.floor(height/2)+math.floor(width/2)%2+1
+    player_z = math.floor(width/2)+math.floor(width/2)%2+1
     
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})

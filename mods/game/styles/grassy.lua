@@ -29,7 +29,7 @@ local function map_function(maze, player)
 
     --Copy to the map
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=width*2,y=4,z=height*2})
+    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*2,y=4,z=width*2})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
@@ -67,8 +67,8 @@ local function map_function(maze, player)
     vm:write_to_map(true)
     
     --player target coords
-    player_x = width+(width*2)%4
-    player_z = height+(height*2)%4
+    player_x = height+(height*2)%4
+    player_z = width+(width*2)%4
     
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
@@ -100,15 +100,15 @@ end
 local function cleanup(width, height)
     --Copy to the map
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=width*2,y=4,z=height*2})
+    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*2,y=4,z=width*2})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
         MaxEdge = emax
     }
-    local air =      minetest.get_content_id("air")
+    local air = minetest.get_content_id("air")
     
-    --Generally a good idea to zero it out
+    --zero it out
     for z=0, width*2 do --z
         for y=0,4 do --
             for x=0, height*2 do --x
@@ -120,8 +120,8 @@ local function cleanup(width, height)
     vm:write_to_map(true)
     
     --player target coords
-    player_x = width+(width*2)%4
-    player_z = height+(height*2)%4
+    player_x = height+(height*2)%4
+    player_z = width+(width*2)%4
     
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
