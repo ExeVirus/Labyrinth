@@ -212,18 +212,19 @@ local function Generate_Maze(width, height, view)
     end
 --Generate Empty maze
     local maze = {}
-    for i=1,height do
+    maze.width  = tonumber(width) + (tonumber(width)-1)%2
+    maze.height = tonumber(height) + (tonumber(height)-1)%2
+    for i=1,maze.height do
         maze[i] = {}
-        for j=1, width do
+        for j=1, maze.width do
             table.insert(maze[i], 0)
         end
     end
-    maze.width  = width
-    maze.height = height
+    
 --initialize first point
     math.randomseed(os.time())
-    local x = math.random(math.floor(width/2)-1)*2+1 
-    local y = math.random(math.floor(height/2)-1)*2+1
+    local x = math.random(math.floor(maze.width/2)-1)*2+1 
+    local y = math.random(math.floor(maze.height/2)-1)*2+1
     --local spot = findNextStarting(maze)
     maze[y][x] = 1
     
