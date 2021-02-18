@@ -17,6 +17,7 @@ minetest.register_node("game:grassy_dirt",
 minetest.register_node("game:grassy_hedge",
 {
   description = "Ground Block",
+  drawtype = "allfaces",
   tiles = {"grassy_hedge.png"},
   light_source = 12,
 })
@@ -41,14 +42,23 @@ local function map_function(maze, player)
     local air =      minetest.get_content_id("air")
     
     --Set up the level itself
-    for z=1, width*2 do --z
-        for x=1, height*2 do --x
+    for z=1, width do --z
+        for x=1, height do --x
             if loc_maze[x][z] == 1 then
-                data[a:index(x, 0, z)] = grass
+                data[a:index(x*2, 0, z*2)]     = grass
+                data[a:index(x*2+1, 0, z*2)]   = grass
+                data[a:index(x*2+1, 0, z*2+1)] = grass
+                data[a:index(x*2, 0, z*2+1)]   = grass
             else
-                data[a:index(x, 0, z)] = dirt
+                data[a:index(x*2, 0, z*2)]     = dirt
+                data[a:index(x*2+1, 0, z*2)]   = dirt
+                data[a:index(x*2+1, 0, z*2+1)] = dirt
+                data[a:index(x*2, 0, z*2+1)]   = dirt
                 for y=1,4 do
-                    data[a:index(x, y, z)] = hedge
+                    data[a:index(x*2,   y, z*2)]   = hedge
+                    data[a:index(x*2+1, y, z*2)]   = hedge
+                    data[a:index(x*2+1, y, z*2+1)] = hedge
+                    data[a:index(x*2,   y, z*2+1)] = hedge
                 end
             end
         end
