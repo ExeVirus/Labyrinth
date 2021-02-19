@@ -56,6 +56,7 @@ minetest.register_item(":", {
 --Style Registrations
 dofile(minetest.get_modpath("game") .. "/styles/classic.lua")
 dofile(minetest.get_modpath("game") .. "/styles/grassy.lua")
+dofile(minetest.get_modpath("game") .. "/styles/glass.lua")
 
 local restart = styles[1].gen_map
 local cleanup = styles[1].cleanup
@@ -125,11 +126,11 @@ table.insert(r,"button_exit[2,5.5;2,1;easy;Easy (40x40)]")
 table.insert(r,"button_exit[6,5.5;2,1;medium;Medium (70x70)]")
 table.insert(r,"button_exit[2,7;2,1;hard;Hard (120x120)]")
 
---table.insert(r,"field[6,6.9;2,0.5;custom_w;"..minetest.colorize("#000","Width")..";"..width.."]")
---table.insert(r,"field[6,7.9;2,0.5;custom_h;"..minetest.colorize("#000","Height")..";"..height.."]")
---table.insert(r,"field_close_on_enter[custom_w;false]")
---table.insert(r,"field_close_on_enter[custom_h;false]")
---table.insert(r,"button_exit[6,8.5;2,1;custom;Custom]")
+table.insert(r,"field[6,6.9;2,0.5;custom_w;"..minetest.colorize("#000","Width")..";"..width.."]")
+table.insert(r,"field[6,7.9;2,0.5;custom_h;"..minetest.colorize("#000","Height")..";"..height.."]")
+table.insert(r,"field_close_on_enter[custom_w;false]")
+table.insert(r,"field_close_on_enter[custom_h;false]")
+table.insert(r,"button_exit[6,8.5;2,1;custom;Custom]")
 
 return table.concat(r);
 end
@@ -183,8 +184,9 @@ local function onRecieveFields(player, formname, fields)
     if formname ~= "game:main" and formname ~= "" then return end
     if formname == "" then --process the inventory formspec
         if fields.game_menu then
-            minetest.after(0.05, function() to_game_menu(player) end)
+            minetest.after(0.15, function() to_game_menu(player) end)
         elseif fields.restart then
+            cleanup(gwidth, gheight)
             local maze = GenMaze(math.floor(gwidth/2)*2+((gwidth+1)%2),math.floor(gheight/2)*2+(gheight+1)%2)
             restart(maze, player)
         end
@@ -226,17 +228,17 @@ local function onRecieveFields(player, formname, fields)
     --If after all that, nothing is set, they used escape to quit.
     elseif fields.custom then
         if tonumber(fields.custom_w) then
-            local var = math.max(math.min(tonumber(fields.custom_w), 150),5)
-            gwidth = math.floor(var/2)*2+1
-            minetest.chat_send_all(gwidth)
+            local var = math.max(math.min(tonumber(fields.custom_w), 125),5)
+            gwidth = var
+
         end
         if tonumber(fields.custom_h) then
-            local var = math.max(math.min(tonumber(fields.custom_h), 150),5)
-            gheight  = math.floor(var/2)*2+1
+            local var = math.max(math.min(tonumber(fields.custom_h), 125),5)
+            gheight  = var
         end
         setup(player)
     elseif fields.quit then
-        minetest.after(0.05, function() minetest.show_formspec(player:get_player_name(), "game:main", main_menu(width_in, height_in, scroll_in)) end)
+        minetest.after(0.10, function() minetest.show_formspec(player:get_player_name(), "game:main", main_menu(width_in, height_in, scroll_in)) end)
         return
     elseif fields.labyexit then
         minetest.request_shutdown("Thanks for playing!")
@@ -250,7 +252,7 @@ minetest.register_on_player_receive_fields(onRecieveFields)
 
 local function safe_clear()
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=200,y=40,z=200})
+    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=250,y=40,z=250})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,

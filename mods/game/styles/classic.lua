@@ -48,8 +48,8 @@ local function map_function(maze, player)
     vm:write_to_map(true)
     
     --player target coords
-    player_x = math.floor(height/2)+height%2
-    player_z = math.floor(width/2)+width%2
+    player_x = math.floor(height/2)+(math.floor(height/2)+1)%2
+    player_z = math.floor(width/2)+(math.floor(width/2)+1)%2
     
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
@@ -104,8 +104,8 @@ local function cleanup(width, height)
     vm:write_to_map(true)
     
     --player target coords
-    player_x = math.floor(height/2)+math.floor(width/2)%2+1
-    player_z = math.floor(width/2)+math.floor(width/2)%2+1
+    player_x = math.floor(height/2)+(math.floor(height/2)+1)%2
+    player_z = math.floor(width/2)+(math.floor(width/2)+1)%2
     
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
