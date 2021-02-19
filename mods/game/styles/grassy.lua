@@ -100,7 +100,7 @@ end
 local function cleanup(width, height)
     --Copy to the map
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*2,y=4,z=width*2})
+    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*2+1,y=4,z=width*2+1})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
@@ -109,9 +109,9 @@ local function cleanup(width, height)
     local air = minetest.get_content_id("air")
     
     --zero it out
-    for z=0, width*2 do --z
+    for z=0, width*2+1 do --z
         for y=0,4 do --
-            for x=0, height*2 do --x
+            for x=0, height*2+1 do --x
                 data[a:index(x, y, z)] = air
             end
         end
