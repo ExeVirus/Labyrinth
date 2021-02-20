@@ -57,6 +57,7 @@ minetest.register_item(":", {
 dofile(minetest.get_modpath("game") .. "/styles/classic.lua")
 dofile(minetest.get_modpath("game") .. "/styles/grassy.lua")
 dofile(minetest.get_modpath("game") .. "/styles/glass.lua")
+dofile(minetest.get_modpath("game") .. "/styles/cave.lua")
 
 local restart = styles[1].gen_map
 local cleanup = styles[1].cleanup
@@ -252,7 +253,7 @@ minetest.register_on_player_receive_fields(onRecieveFields)
 
 local function safe_clear()
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=250,y=40,z=250})
+    local emin, emax = vm:read_from_map({x=0,y=-20,z=0}, {x=225,y=10,z=225})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
@@ -261,9 +262,9 @@ local function safe_clear()
     local air = minetest.get_content_id("air")
     
     --Generally a good idea to zero it out
-    for z=0, 200 do --z
-        for y=0,50 do --
-            for x=0, 200 do --x
+    for z=0, 225 do --z
+        for y=0,6 do --
+            for x=0, 225 do --x
                 data[a:index(x, y, z)] = air
             end
         end
@@ -272,7 +273,7 @@ local function safe_clear()
     vm:write_to_map(true)
     
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=-50,y=-20,z=-50}, {x=250,y=-20,z=250})
+    local emin, emax = vm:read_from_map({x=-50,y=-20,z=-50}, {x=225,y=-20,z=225})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
