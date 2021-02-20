@@ -2,7 +2,7 @@
 ![screenshot](screenshot.jpg)
 ## An aMAZEing Minetest game
 
-## VERSION 0.3
+## VERSION 0.4
 
 This is very much a work in progress, technically quite playable though. 
 
