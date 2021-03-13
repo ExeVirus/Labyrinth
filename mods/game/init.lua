@@ -58,6 +58,7 @@ dofile(minetest.get_modpath("game") .. "/styles/classic.lua")
 dofile(minetest.get_modpath("game") .. "/styles/grassy.lua")
 dofile(minetest.get_modpath("game") .. "/styles/glass.lua")
 dofile(minetest.get_modpath("game") .. "/styles/cave.lua")
+dofile(minetest.get_modpath("game") .. "/styles/club.lua")
 
 local restart = styles[1].gen_map
 local cleanup = styles[1].cleanup
@@ -263,7 +264,7 @@ local function safe_clear()
     
     --Generally a good idea to zero it out
     for z=0, 225 do --z
-        for y=0,6 do --
+        for y=0,10 do --
             for x=0, 225 do --x
                 data[a:index(x, y, z)] = air
             end
