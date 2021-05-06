@@ -109,7 +109,7 @@ table.insert(r,"Labyrinth")
 table.insert(r,"<global halign=left color=#000 size=24 font=Regular>\n\n")
 table.insert(r,"Level style:]")
 --quit game button
-table.insert(r,"button[8,0.15;2,0.7;labyexit;Quit Labyrinth]")
+table.insert(r,"button[7.5,0.15;3.3,0.7;labyexit;Quit Labyrinth]")
 --Scroll container containing setnames with icons:
 table.insert(r,"scroll_container[0.5,2;10,2;scroll;horizontal;0.1]")
 --for each set, output the icon and set_name as a button
@@ -124,15 +124,15 @@ table.insert(r,"scroll_container_end[]")
 table.insert(r,"scrollbaroptions[max="..(numStyles*20)..";thumbsize="..(numStyles*10).."]")
 table.insert(r,"scrollbar[1,4;9,0.5;horizontal;scroll;"..scroll.."]")
 
-table.insert(r,"button_exit[2,5.5;2,1;easy;Easy (40x40)]")
-table.insert(r,"button_exit[6,5.5;2,1;medium;Medium (70x70)]")
-table.insert(r,"button_exit[2,7;2,1;hard;Hard (120x120)]")
+table.insert(r,"button_exit[1.25,5.5;4,1;easy;Easy (40x40)]")
+table.insert(r,"button_exit[5.75,5.5;4,1;medium;Medium (70x70)]")
+table.insert(r,"button_exit[1.25,7;4,1;hard;Hard (120x120)]")
 
-table.insert(r,"field[6,6.9;2,0.5;custom_w;"..minetest.colorize("#000","Width")..";"..width.."]")
-table.insert(r,"field[6,7.9;2,0.5;custom_h;"..minetest.colorize("#000","Height")..";"..height.."]")
+table.insert(r,"field[5.75,6.9;4,0.5;custom_w;"..minetest.colorize("#000","Width")..";"..width.."]")
+table.insert(r,"field[5.75,7.9;4,0.5;custom_h;"..minetest.colorize("#000","Height")..";"..height.."]")
 table.insert(r,"field_close_on_enter[custom_w;false]")
 table.insert(r,"field_close_on_enter[custom_h;false]")
-table.insert(r,"button_exit[6,8.5;2,1;custom;Custom]")
+table.insert(r,"button_exit[5.75,8.5;4,1;custom;Custom]")
 
 return table.concat(r);
 end
@@ -146,8 +146,8 @@ local function pause_menu()
         "no_prepend[]",
         "bgcolor[#DFE0EDD0;both;#00000080]",
     }
-    table.insert(r,"button_exit[2,0.5;4,1;game_menu;Quit to Game Menu]")
-    table.insert(r,"button_exit[2,2;4,1;restart;Restart with new Map]")
+    table.insert(r,"button_exit[0.6,0.5;6.8,1;game_menu;Quit to Game Menu]")
+    table.insert(r,"button_exit[0.6,2;6.8,1;restart;Restart with new Map]")
     table.insert(r,"hypertext[2,3.5;4,4.25;;")
     table.insert(r,"<global halign=center color=#03A size=32 font=Regular>")
     table.insert(r,"Credits")

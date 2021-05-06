@@ -5,6 +5,7 @@ minetest.register_node("game:cave_rock",
     description = "Rock Block",
     drawtype = "mesh",
     mesh = "round.obj",
+    paramtype = "light",
     paramtype2 = "facedir",
     collision_box = {
         type = "fixed", --Complicated Collision Boxes:
@@ -20,7 +21,7 @@ minetest.register_node("game:cave_rock",
         type = "fixed",
         fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}, 
     },
-    tiles = {"cave_stone.png"},
+    tiles = {{name = "cave_stone.png", backface_culling=true}},
 })
 
 minetest.register_node("game:cave_ground",
@@ -28,6 +29,7 @@ minetest.register_node("game:cave_ground",
     description = "Ground Rock",
     drawtype = "mesh",
     mesh = "glove.obj",
+    paramtype = "light",
     paramtype2 = "facedir",
     collision_box = {
         type = "fixed",
@@ -43,7 +45,7 @@ minetest.register_node("game:cave_ground",
         type = "fixed",
         fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
     },
-    tiles = {"cave_stone.png"},
+    tiles = {{name = "cave_stone.png", backface_culling=true}},
 })
 
 minetest.register_node("game:cave_torch",
@@ -110,7 +112,7 @@ local function map_function(maze, player)
                     end
                 end
                 torch_count = torch_count + 1
-                if torch_count == 2 then
+                if torch_count == 4 then
                     torch_count = 0
                     local xof = math.random(0,2)
                     local zof = math.random(0,2)
