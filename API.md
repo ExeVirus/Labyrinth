@@ -31,7 +31,7 @@ Here's everything init.lua does:
 10. Registers an `on_joinplayer` to call the normal menu formspec and other housekeeping
 11. Registers a globalstep that allows the player to win when they reach any height below -10. (which calls cleanup, and shows the normal menu)
 
-That's it, thats the entire core API. Now, lets talk about actually registering your own style, which is probably why you are here:
+That's it, thats the entire game functionality. Now, lets talk about actually registering your own style, which is probably why you are here:
 
 # Registering Your Own Style
 
@@ -48,7 +48,7 @@ There is a single global function provided by this game: `laby_register_style`, 
 #### Notes about the default genMaze
 It will return a table like below:
 ```lua
-table {
+{
     ["width"]  = gwidth --global based on main menu values + 1, see init.lua
     ["height"] = gheight
     [1] = {0,1,0,1,0},
