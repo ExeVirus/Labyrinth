@@ -165,4 +165,4 @@ local function cleanup(width, height)
     vm:write_to_map(true)
 end
 
-register_style("cave","cave", map_function, cleanup)
+laby_register_style("cave","cave", map_function, cleanup)

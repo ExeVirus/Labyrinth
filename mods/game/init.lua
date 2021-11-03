@@ -1,14 +1,38 @@
+-- ██╗      █████╗ ██████╗ ██╗   ██╗██████╗ ██╗███╗   ██╗████████╗██╗  ██╗
+-- ██║     ██╔══██╗██╔══██╗╚██╗ ██╔╝██╔══██╗██║████╗  ██║╚══██╔══╝██║  ██║
+-- ██║     ███████║██████╔╝ ╚████╔╝ ██████╔╝██║██╔██╗ ██║   ██║   ███████║
+-- ██║     ██╔══██║██╔══██╗  ╚██╔╝  ██╔══██╗██║██║╚██╗██║   ██║   ██╔══██║
+-- ███████╗██║  ██║██████╔╝   ██║   ██║  ██║██║██║ ╚████║   ██║   ██║  ██║
+-- ╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝
+-- Ascii art font: ANSI Shadow, from patorjk.com/software/taag/
 --
+-- The code for labyrinth is licensed as follows:
+-- MIT License, ExeVirus (c) 2021
 --
---
---   Labyrinth Core Game
---
---
---
+-- Please see the LICENSE file for texture licenses
 
+
+--Settings Changes --
+--BE VERY CAREFUL WHEN PLAYING WITH OTHER PEOPLES SETTINGS--
 minetest.settings:set("enable_damage","false")
+local max_block_send_distance = minetest.settings:get("max_block_send_distance")
+local block_send_optimize_distance = minetest.settings:get("block_send_optimize_distance")
+if max_block_send_distance == 31 then -- no one would set these to 31, so it must have been a crash,
+    max_block_send_distance = 8       -- and we should revert to defaults on proper shutdown
+end
+if block_send_optimize_distance == 31 then
+    block_send_optimize_distance = 4
+end
+minetest.settings:set("max_block_send_distance","8")
+minetest.settings:set("block_send_optimize_distance","4")
+minetest.register_on_shutdown(function()
+    minetest.settings:set("max_block_send_distance",tostring(max_block_send_distance))
+    minetest.settings:set("block_send_optimize_distance",tostring(block_send_optimize_distance))
+end)
+--End Settings Changes--
 
-local GenMaze = dofile(minetest.get_modpath("game") .. "/maze.lua")
+local DefaultGenerateMaze = dofile(minetest.get_modpath("game") .. "/maze.lua")
+local GenMaze = DefaultGenerateMaze
 
 --Style registrations
 
@@ -17,25 +41,27 @@ local styles = {}
 local music = nil
 
 -------------------
--- Global function register_style(name, map_from_maze)
+-- Global function laby_register_style(name, music_name, map_from_maze, cleanup, genMaze)
 --
 -- name: text in lowercase, typically, of the map style
+-- music_name: music file name
 -- map_from_maze = function(maze, player)
 --   maze is from GenMaze() above, an input
 --   player is the player_ref to place them at the start of the maze
---   map_from_maze should turn on the music for the maze
 -- cleanup = function (maze_w, maze_h) -- should replace maze with air
+-- genMaze is an optional arguement to provide your own algorithm for this style to generate maps with
 --
-function register_style(name, music_name, map_from_maze, cleanup)
+function laby_register_style(name, music_name, map_from_maze, cleanup, genMaze)
     numStyles = numStyles + 1
     styles[numStyles] = {}
     styles[numStyles].name = name
     styles[numStyles].music = music_name
     styles[numStyles].gen_map = map_from_maze
     styles[numStyles].cleanup = cleanup
+    styles[numStyles].genMaze = genMaze
 end
 
---Common node between styles
+--Common node between styles, used for hidden floor to fall onto
 minetest.register_node("game:inv",
 {
   description = "Ground Block",
@@ -50,8 +76,6 @@ minetest.register_item(":", {
 	wield_image = "inv.png",
 	groups = {not_in_creative_inventory=1},
 })
-
-
 
 --Style Registrations
 dofile(minetest.get_modpath("game") .. "/styles/classic.lua")
@@ -68,6 +92,11 @@ local gscroll = 0
 local selectedStyle = 1
 local first_load = false
 local function setup(player)
+    if styles[selectedStyle].genMaze ~= nil and type(styles[selectedStyle].genMaze) == "function" then
+        GenMaze = styles[selectedStyle].genMaze
+    else
+        GenMaze = DefaultGenerateMaze
+    end
     --Load up the level
     local maze = GenMaze(math.floor(gwidth/2)*2+((gwidth+1)%2),math.floor(gheight/2)*2+(gheight+1)%2)
     restart = styles[selectedStyle].gen_map
@@ -83,7 +112,6 @@ local function setup(player)
     })
     minetest.after(2, function() first_load = true end)
 end
-    
 
 --------- GUI ------------
 
@@ -94,24 +122,22 @@ local height  = height_in or 42
 local scroll = scroll_in or 0
 --Header
 local r = {
-    "formspec_version[3]",
-    "size[11,11]",
-    "position[0.5,0.5]",
-    "anchor[0.5,0.5]",
-    "no_prepend[]",
-    "bgcolor[#DFE0EDD0;both;#00000080]",
-    "box[0.5,1;10,9.5;#DDD7]",
+[[
+formspec_version[3]
+size[11,11]
+position[0.5,0.5]
+anchor[0.5,0.5]
+no_prepend[]
+bgcolor[#DFE0EDD0;both;#00000080]
+box[0.5,1;10,9.5;#DDD7]
+hypertext[1,0.1;9,5;;<global halign=center color=#03A size=32 font=Regular>
+Labyrinth<global halign=left color=#000 size=24 font=Regular>
+
+Level style:]
+button[7.5,0.15;3.3,0.7;labyexit;Quit Labyrinth]
+scroll_container[0.5,2;10,2;scroll;horizontal;0.1]
+]],
 }
---title
-table.insert(r,"hypertext[1,0.1;9,2;;")
-table.insert(r,"<global halign=center color=#03A size=32 font=Regular>")
-table.insert(r,"Labyrinth")
-table.insert(r,"<global halign=left color=#000 size=24 font=Regular>\n\n")
-table.insert(r,"Level style:]")
---quit game button
-table.insert(r,"button[7.5,0.15;3.3,0.7;labyexit;Quit Labyrinth]")
---Scroll container containing setnames with icons:
-table.insert(r,"scroll_container[0.5,2;10,2;scroll;horizontal;0.1]")
 --for each set, output the icon and set_name as a button
 for i=1, numStyles, 1 do
     if selectedStyle == i then
@@ -121,42 +147,38 @@ for i=1, numStyles, 1 do
     table.insert(r,"image_button["..((i-1)*2+0.25)..",0.15;1.5,1.5;"..name..".png;style"..i..";"..name.."]")
 end
 table.insert(r,"scroll_container_end[]")
-table.insert(r,"scrollbaroptions[max="..(numStyles*20)..";thumbsize="..(numStyles*10).."]")
+table.insert(r,"scrollbaroptions[max="..(numStyles*10)..";thumbsize="..(numStyles*10).."]")
 table.insert(r,"scrollbar[1,4;9,0.5;horizontal;scroll;"..scroll.."]")
-
-table.insert(r,"button_exit[1.25,5.5;4,1;easy;Easy (40x40)]")
-table.insert(r,"button_exit[5.75,5.5;4,1;medium;Medium (70x70)]")
-table.insert(r,"button_exit[1.25,7;4,1;hard;Hard (120x120)]")
-
+table.insert(r,
+[[button_exit[1.25,5.5;4,1;easy;Easy (40x40)]
+button_exit[5.75,5.5;4,1;medium;Medium (70x70)]
+button_exit[1.25,7;4,1;hard;Hard (120x120)]
+]])
 table.insert(r,"field[5.75,6.9;4,0.5;custom_w;"..minetest.colorize("#000","Width")..";"..width.."]")
 table.insert(r,"field[5.75,7.9;4,0.5;custom_h;"..minetest.colorize("#000","Height")..";"..height.."]")
-table.insert(r,"field_close_on_enter[custom_w;false]")
-table.insert(r,"field_close_on_enter[custom_h;false]")
-table.insert(r,"button_exit[5.75,8.5;4,1;custom;Custom]")
-
+table.insert(r,
+[[field_close_on_enter[custom_w;false]
+field_close_on_enter[custom_h;false]
+button_exit[5.75,8.5;4,1;custom;Custom]
+]])
 return table.concat(r);
 end
 
-local function pause_menu()
-    local r = {
-        "formspec_version[3]",
-        "size[8,8]",
-        "position[0.5,0.5]",
-        "anchor[0.5,0.5]",
-        "no_prepend[]",
-        "bgcolor[#DFE0EDD0;both;#00000080]",
-    }
-    table.insert(r,"button_exit[0.6,0.5;6.8,1;game_menu;Quit to Game Menu]")
-    table.insert(r,"button_exit[0.6,2;6.8,1;restart;Restart with new Map]")
-    table.insert(r,"hypertext[2,3.5;4,4.25;;")
-    table.insert(r,"<global halign=center color=#03A size=32 font=Regular>")
-    table.insert(r,"Credits")
-    table.insert(r,"<global halign=center color=#000 size=16 font=Regular>\n")
-    table.insert(r,"Original Game by ExeVirus\n")
-    table.insert(r,"Source code is MIT License, 2021\n")
-    table.insert(r,"Media/Music is:\nCC-BY-SA, ExeVirus 2021\n")
-    table.insert(r,"Music coming soon to Spotify and other streaming services!\n]")
-    return table.concat(r);
+local function pause_menu() return 
+[[formspec_version[3]
+size[8,8]
+position[0.5,0.5]
+anchor[0.5,0.5]
+no_prepend[]
+bgcolor[#DFE0EDD0;both;#00000080]
+button_exit[0.6,0.5;6.8,1;game_menu;Quit to Game Menu]
+button_exit[0.6,2;6.8,1;restart;Restart with new Map]
+hypertext[2,3.5;4,4.25;;<global halign=center color=#03A size=32 font=Regular>Credits<global halign=center color=#000 size=16 font=Regular>
+Original Game by ExeVirus
+Source code is MIT License, 2021
+Media/Music is:\nCC-BY-SA, ExeVirus 2021
+Music coming soon to Spotify and other streaming services!]
+]]
 end
 
 local function to_game_menu(player)
@@ -252,40 +274,28 @@ end
 
 minetest.register_on_player_receive_fields(onRecieveFields)
 
-local function safe_clear()
+local function safe_clear(w, l)
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=-20,z=0}, {x=225,y=10,z=225})
-    local data = vm:get_data()
-    local a = VoxelArea:new{
-        MinEdge = emin,
-        MaxEdge = emax
-    }
-    local air = minetest.get_content_id("air")
-    
-    --Generally a good idea to zero it out
-    for z=0, 225 do --z
-        for y=0,10 do --
-            for x=0, 225 do --x
-                data[a:index(x, y, z)] = air
-            end
-        end
-    end
-    vm:set_data(data)
-    vm:write_to_map(true)
-    
-    local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=-50,y=-20,z=-50}, {x=225,y=-20,z=225})
+    local emin, emax = vm:read_from_map({x=-10,y=-11,z=-10}, {x=w,y=10,z=l})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
         MaxEdge = emax
     }
     local invisible = minetest.get_content_id("game:inv")
+    local air = minetest.get_content_id("air")
     
-    --Generally a good idea to zero it out
-    for z=-50, 250 do --z
-        for x=-50, 250 do --x
-            data[a:index(x, -20, z)] = invisible
+    for z=0, l-10 do --z
+        for y=0,10 do --y
+            for x=0, w-10 do --x
+                data[a:index(x, y, z)] = air
+            end
+        end
+    end
+
+    for z=-10, l do --z
+        for x=-10, w do --x
+            data[a:index(x, -11, z)] = invisible
         end
     end
     vm:set_data(data)
@@ -294,7 +304,7 @@ end
 
 minetest.register_on_joinplayer(
 function(player)
-    safe_clear()
+    safe_clear(300,300)
     player:set_properties({
 			textures = {"inv.png", "inv.png"},
 			visual = "upright_sprite",
@@ -335,5 +345,3 @@ function(dtime)
     end
 end
 )
-
-

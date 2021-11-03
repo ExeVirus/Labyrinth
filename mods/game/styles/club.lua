@@ -226,4 +226,4 @@ local function cleanup(width, height)
     minetest.set_timeofday(0.5)
 end
 
-register_style("club","club", map_function, cleanup)
+laby_register_style("club","club", map_function, cleanup)

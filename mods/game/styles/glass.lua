@@ -78,4 +78,4 @@ local function cleanup(width, height)
     vm:write_to_map(true)
 end
 
-register_style("glass","glass", map_function, cleanup)
+laby_register_style("glass","glass", map_function, cleanup)
