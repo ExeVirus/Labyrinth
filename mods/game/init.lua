@@ -23,8 +23,8 @@ end
 if block_send_optimize_distance == 31 then
     block_send_optimize_distance = 4
 end
-minetest.settings:set("max_block_send_distance","8")
-minetest.settings:set("block_send_optimize_distance","4")
+minetest.settings:set("max_block_send_distance","30")
+minetest.settings:set("block_send_optimize_distance","30")
 minetest.register_on_shutdown(function()
     minetest.settings:set("max_block_send_distance",tostring(max_block_send_distance))
     minetest.settings:set("block_send_optimize_distance",tostring(block_send_optimize_distance))
