@@ -2,8 +2,6 @@
 ![screenshot](screenshot.jpg)
 ## An aMAZEing Minetest game
 
-## VERSION 1.0
-
 ## 5 Unique styles!  Music!   Creativity!
 
 Just escape the maze to "win" and you'll be greeted with the main menu to try a different style!
