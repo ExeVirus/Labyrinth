@@ -49,7 +49,7 @@ There is a single global function provided by this game: `laby_register_style`, 
 It will return a table like below:
 ```lua
 {
-    ["width"]  = gwidth --global based on main menu values + 1, see init.lua
+    ["width"]  = gwidth --global based on main menu values rounded up to the nearest odd number, see init.lua
     ["height"] = gheight
     [1] = {0,1,0,1,0},
     [2] = {0,1,0,1,0},
@@ -58,6 +58,8 @@ It will return a table like below:
 }
 ---Where 1's are for path and 0's for walls.
 ```
+Note that my GenMaze function can only handle odd numbered sizes. I'm sure you'll notice that if you attempt different small custom sizes.
+*Feel free to fix it for me ;) and make a PR.*
 
-To see how maps are generated and cleaned up, use any of the styles as an example, the simplest being `styles/glass.lua`
+To see how maps are generated and cleaned up, use `styles/glass.lua` as an example, it is the simplest and has a lot of comments to explain the process
 

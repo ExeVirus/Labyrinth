@@ -2,7 +2,7 @@
 ![screenshot](screenshot.jpg)
 ## An aMAZEing Minetest game
 
-## VERSION 0.99 -Final Testing, todo: fix mobile scaling issues
+## VERSION 1.0
 
 ## 5 Unique styles!  Music!   Creativity!
 
@@ -23,6 +23,10 @@ To quit a level or restart in-game, press "i" or the inventory button.
 You always start in the middle of a maze and try to escape through any edge.
 
 The limit on maze size is ~200 by 200.
+
+## You can add your own styles and maze generation!
+
+Just have a read through the included API.md to learn more
 
 # License
 

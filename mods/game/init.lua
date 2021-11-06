@@ -4,7 +4,7 @@
 -- ██║     ██╔══██║██╔══██╗  ╚██╔╝  ██╔══██╗██║██║╚██╗██║   ██║   ██╔══██║
 -- ███████╗██║  ██║██████╔╝   ██║   ██║  ██║██║██║ ╚████║   ██║   ██║  ██║
 -- ╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝
--- Ascii art font: ANSI Shadow, from patorjk.com/software/taag/
+-- Ascii art font: ANSI Shadow, All acii art from patorjk.com/software/taag/
 --
 -- The code for labyrinth is licensed as follows:
 -- MIT License, ExeVirus (c) 2021
@@ -30,6 +30,20 @@ minetest.register_on_shutdown(function()
     minetest.settings:set("block_send_optimize_distance",tostring(block_send_optimize_distance))
 end)
 --End Settings Changes--
+
+--Load our Settings--
+local function handleColor(settingtypes_name, default)
+    return minetest.settings:get(settingtypes_name) or default
+end
+local primary_c              = handleColor("laby_primary_c",              "#06EF")
+local hover_primary_c        = handleColor("laby_hover_primary_c",        "#79B1FD")
+local on_primary_c           = handleColor("laby_on_primary_c",           "#FFFF")
+local secondary_c            = handleColor("laby_secondary_c",            "#FFFF")
+local hover_secondary_c      = handleColor("laby_hover_secondary_c",      "#AAAF")
+local on_secondary_c         = handleColor("laby_on_secondary_c",         "#000F")
+local background_primary_c   = handleColor("laby_background_primary_c",   "#F0F0F0FF")
+local background_secondary_c = handleColor("laby_background_secondary_c", "#D0D0D0FF")
+--End Settings Load
 
 local DefaultGenerateMaze = dofile(minetest.get_modpath("game") .. "/maze.lua")
 local GenMaze = DefaultGenerateMaze
@@ -86,8 +100,8 @@ dofile(minetest.get_modpath("game") .. "/styles/club.lua")
 
 local restart = styles[1].gen_map
 local cleanup = styles[1].cleanup
-local gwidth = 61
-local gheight = 61
+local gwidth = 57
+local gheight = 42
 local gscroll = 0
 local selectedStyle = 1
 local first_load = false
@@ -115,70 +129,93 @@ end
 
 --------- GUI ------------
 
---Main_Menu formspec for Labyrinth
-local function main_menu(width_in, height_in, scroll_in)
-local width  = width_in or 57
-local height  = height_in or 42
-local scroll = scroll_in or 0
---Header
-local r = {
-[[
-formspec_version[3]
-size[11,11]
-position[0.5,0.5]
-anchor[0.5,0.5]
-no_prepend[]
-bgcolor[#DFE0EDD0;both;#00000080]
-box[0.5,1;10,9.5;#DDD7]
-hypertext[1,0.1;9,5;;<global halign=center color=#03A size=32 font=Regular>
-Labyrinth<global halign=left color=#000 size=24 font=Regular>
-
-Level style:]
-button[7.5,0.15;3.3,0.7;labyexit;Quit Labyrinth]
-scroll_container[0.5,2;10,2;scroll;horizontal;0.1]
-]],
-}
---for each set, output the icon and set_name as a button
-for i=1, numStyles, 1 do
-    if selectedStyle == i then
-        table.insert(r,"box["..((i-1)*2+0.1)..",0.0;1.8,1.8;#0B35]")
+--used to make this formspec easier to read
+local function table_concat(t1,t2)
+    for i=1,#t2 do
+        t1[#t1+1] = t2[i]
     end
-    local name = styles[i].name
-    table.insert(r,"image_button["..((i-1)*2+0.25)..",0.15;1.5,1.5;"..name..".png;style"..i..";"..name.."]")
-end
-table.insert(r,"scroll_container_end[]")
-table.insert(r,"scrollbaroptions[max="..(numStyles*10)..";thumbsize="..(numStyles*10).."]")
-table.insert(r,"scrollbar[1,4;9,0.5;horizontal;scroll;"..scroll.."]")
-table.insert(r,
-[[button_exit[1.25,5.5;4,1;easy;Easy (40x40)]
-button_exit[5.75,5.5;4,1;medium;Medium (70x70)]
-button_exit[1.25,7;4,1;hard;Hard (120x120)]
-]])
-table.insert(r,"field[5.75,6.9;4,0.5;custom_w;"..minetest.colorize("#000","Width")..";"..width.."]")
-table.insert(r,"field[5.75,7.9;4,0.5;custom_h;"..minetest.colorize("#000","Height")..";"..height.."]")
-table.insert(r,
-[[field_close_on_enter[custom_w;false]
-field_close_on_enter[custom_h;false]
-button_exit[5.75,8.5;4,1;custom;Custom]
-]])
-return table.concat(r);
+    return t1
 end
 
-local function pause_menu() return 
-[[formspec_version[3]
-size[8,8]
-position[0.5,0.5]
-anchor[0.5,0.5]
-no_prepend[]
-bgcolor[#DFE0EDD0;both;#00000080]
-button_exit[0.6,0.5;6.8,1;game_menu;Quit to Game Menu]
-button_exit[0.6,2;6.8,1;restart;Restart with new Map]
-hypertext[2,3.5;4,4.25;;<global halign=center color=#03A size=32 font=Regular>Credits<global halign=center color=#000 size=16 font=Regular>
-Original Game by ExeVirus
-Source code is MIT License, 2021
-Media/Music is:\nCC-BY-SA, ExeVirus 2021
-Music coming soon to Spotify and other streaming services!]
-]]
+--Main_Menu formspec function for Labyrinth
+local function main_menu(width_in, height_in, scroll_in)
+    local width  = width_in or gwidth
+    local height  = height_in or gheight
+    local scroll = scroll_in or 0
+
+    --Main Menu Formspec "r"
+    local r = {
+        "formspec_version[3]",
+        "size[11,11]",
+        "position[0.5,0.5]",
+        "anchor[0.5,0.5]",
+        "no_prepend[]",
+        "bgcolor[",background_primary_c,";both;#AAAAAA40]",
+        "box[0,0;11,1;",primary_c,"]",
+        "style_type[button;border=false;bgimg=back.png^[multiply:",secondary_c,";bgimg_middle=10,3;textcolor=",on_secondary_c,"]",
+        "style_type[button:hovered;bgcolor=",hover_secondary_c,"]",
+        "hypertext[1,0.08;9,5;;<global halign=center color=",on_primary_c," size=36 font=Regular>Labyrinth]",
+        "hypertext[0.5,1.2;9,5;;<global halign=left color=",on_secondary_c," size=24 font=Regular>Level style:]\n",
+        "button[7.5,0.15;3.3,0.7;labyexit;Quit Labyrinth]",
+        "box[0.5,1.9;10,2.1;",background_secondary_c,"]",
+        "scroll_container[0.5,2;10,2;scroll;horizontal;0.2]",
+    }
+    --for each set, output the icon and set_name as a button
+    for i=1, numStyles, 1 do
+        if selectedStyle == i then
+            table.insert(r,"box["..((i-1)*2+0.1)..",0.0;1.8,1.8;#0B35]") --hardcoded color, sorry
+        end
+        local name = styles[i].name
+        table.insert(r,"image_button["..((i-1)*2+0.25)..",0.15;1.5,1.5;"..name..".png;style"..i..";"..name.."]")
+    end
+    table.insert(r,"scroll_container_end[]")
+    table.insert(r,"scrollbaroptions[max="..tostring((numStyles - 5) * 10)..";thumbsize="..tostring((numStyles - 5) * 2.5).."]")
+    local r2 = {
+        "scrollbar[0.5,4;10,0.5;horizontal;scroll;",tostring(scroll),"]",
+        "style_type[button;border=false;bgimg=back.png^[multiply:",primary_c,";bgimg_middle=10,10;textcolor=",on_primary_c,"]",
+        "style_type[button:hovered;bgimg=back.png^[multiply:",hover_primary_c,";bgcolor=#FFF]",
+        "button_exit[3.5,4.75;4,1;easy;Easy (40x40)]",
+        "button_exit[3.5,6;4,1;medium;Medium (70x70)]",
+        "button_exit[3.5,7.25;4,1;hard;Hard (120x120)]",
+        "box[0.5,8.75;10,0.1;",background_secondary_c,"]",
+        "style_type[field;border=false;font_size=16;textcolor=",on_secondary_c,"]",
+        "style_type[label;textcolor=",on_secondary_c,"]",
+        "box[0.5,9.4;2,0.6;",background_secondary_c,"]",
+        "box[0.5,9.93;2,0.07;",primary_c,"]",
+        "label[0.5,9.2;Width]",
+        "field[0.55,9.5;2,0.5;custom_w;;",width,"]",
+        "label[2.67,9.75;x]",
+        "box[3,9.4;2,0.6;",background_secondary_c,"]",
+        "box[3,9.93;2,0.07;",primary_c,"]",
+        "label[3,9.2;Height]",
+        "field[3.05,9.5;2,0.5;custom_h;;",height,"]",
+        "field_close_on_enter[custom_w;false]",
+        "field_close_on_enter[custom_h;false]",
+        "button_exit[5.5,9.3;4,0.8;custom;Custom]",
+    }
+    table_concat(r,r2)
+    return table.concat(r);
+end
+
+local function pause_menu()
+    local r = {
+        "formspec_version[3]",
+        "size[8,8]",
+        "position[0.5,0.5]",
+        "anchor[0.5,0.5]",
+        "no_prepend[]",
+        "bgcolor[",background_primary_c,";both;#AAAAAA40]",
+        "style_type[button;border=false;bgimg=back.png^[multiply:",primary_c,";bgimg_middle=10,10;textcolor=",on_primary_c,"]",
+        "style_type[button:hovered;bgimg=back.png^[multiply:",hover_primary_c,";bgcolor=#FFF]",
+        "button_exit[0.6,0.5;6.8,1;game_menu;Quit to Game Menu]",
+        "button_exit[0.6,2;6.8,1;restart;Restart with new Map]",
+        "hypertext[2,3.5;4,4.25;;<global halign=center color=",primary_c," size=32 font=Regular>Credits<global halign=center color=",on_secondary_c," size=16 font=Regular>\n",
+        "Original Game by ExeVirus\n",
+        "Source code is MIT License, 2021\n",
+        "Media/Music is:\nCC-BY-SA, ExeVirus 2021\n",
+        "Music coming soon to Spotify and other streaming services!]",
+    }
+    return table.concat(r)
 end
 
 local function to_game_menu(player)
@@ -221,7 +258,7 @@ local function onRecieveFields(player, formname, fields)
     local width_in = 39
     local height_in = 74
     if fields.scroll then
-        scroll_in = tonumber(fields.scroll)
+        scroll_in = tonumber(minetest.explode_scrollbar_event(fields.scroll).value)
     end
     if fields.custom_h then
         height_in = tonumber(fields.custom_h)
@@ -230,11 +267,14 @@ local function onRecieveFields(player, formname, fields)
         width_in = tonumber(fields.custom_w)
     end
 
-    --Loop through all fields
+    --Loop through all fields for level selected
     for name,_ in pairs(fields) do
         if string.sub(name,1,5) == "style" then
-            selectedStyle = tonumber(string.sub(name,6,-1))
-            --load level style
+            local newStyle = tonumber(string.sub(name,6,-1))
+            if newStyle ~= selectedStyle then --load level style
+                selectedStyle = newStyle
+                minetest.show_formspec(player:get_player_name(), "game:main", main_menu(width_in, height_in, scroll_in))
+            end
         end
     end
     if fields.easy then
@@ -254,7 +294,6 @@ local function onRecieveFields(player, formname, fields)
         if tonumber(fields.custom_w) then
             local var = math.max(math.min(tonumber(fields.custom_w), 125),5)
             gwidth = var
-
         end
         if tonumber(fields.custom_h) then
             local var = math.max(math.min(tonumber(fields.custom_h), 125),5)
@@ -268,7 +307,7 @@ local function onRecieveFields(player, formname, fields)
         minetest.request_shutdown("Thanks for playing!")
         return
     else
-        minetest.show_formspec(player:get_player_name(), "game:main", main_menu(width_in, height_in, scroll_in))
+        --minetest.show_formspec(player:get_player_name(), "game:main", main_menu(width_in, height_in, scroll_in))
     end
 end
 
@@ -340,6 +379,7 @@ function(dtime)
         local pos = player:get_pos()
         if pos.y < -10 then
             minetest.sound_play("win")
+            minetest.chat_send_all(minetest.colorize(primary_c,"Congrats on finishing ".. styles[selectedStyle].name).. "!")
             to_game_menu(player)
         end
     end

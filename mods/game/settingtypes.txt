@@ -1,0 +1,10 @@
+# Settings for Labyrinth (all for menu colors)
+
+laby_primary_c              (Primary Color)                string #06EF
+laby_hover_primary_c        (Primary Button Hover Color)   string #79B1FD
+laby_on_primary_c           (Text Color on Primary)        string #FFFF
+laby_secondary_c            (Secondary Color)              string #FFFF
+laby_hover_secondary_c      (Secondary Button Hover Color) string #AAAF
+laby_on_secondary_c         (Text Color on Secondary)      string #000F
+laby_background_primary_c   (Primary Background Color)     string #F0F0F0FF
+laby_background_secondary_c (Secondary Background Color)   string #D0D0D0FF
