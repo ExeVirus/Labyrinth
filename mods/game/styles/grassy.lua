@@ -29,6 +29,9 @@ minetest.register_node("game:grassy_hedge",
   light_source = 12,
 })
 
+--Global Variable
+local wall_width = 2  ---------------------------------------------ChangeME for testing
+
 local function map_function(maze, player)
     local loc_maze = maze
     width = loc_maze.width
@@ -36,7 +39,7 @@ local function map_function(maze, player)
 
     --Copy to the map
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*2,y=4,z=width*2})
+    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*wall_width,y=5,z=width*wall_width})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
@@ -52,20 +55,29 @@ local function map_function(maze, player)
     for z=1, width do --z
         for x=1, height do --x
             if loc_maze[x][z] == 1 then
-                data[a:index(x*2, 0, z*2)]     = grass
-                data[a:index(x*2+1, 0, z*2)]   = grass
-                data[a:index(x*2+1, 0, z*2+1)] = grass
-                data[a:index(x*2, 0, z*2+1)]   = grass
+                for off_z=0, wall_width-1 do 
+                    for off_x=0, wall_width-1 do
+                        data[a:index(x*wall_width+off_x, 0, z*wall_width+off_z)]     = grass
+                    end
+                end
             else
-                data[a:index(x*2, 0, z*2)]     = dirt
-                data[a:index(x*2+1, 0, z*2)]   = dirt
-                data[a:index(x*2+1, 0, z*2+1)] = dirt
-                data[a:index(x*2, 0, z*2+1)]   = dirt
+                for off_z=0, wall_width-1 do 
+                    for off_x=0, wall_width-1 do
+                        data[a:index(x*wall_width+off_x, 0, z*wall_width+off_z)]     = dirt
+                    end
+                end
                 for y=1,4 do
-                    data[a:index(x*2,   y, z*2)]   = hedge
-                    data[a:index(x*2+1, y, z*2)]   = hedge
-                    data[a:index(x*2+1, y, z*2+1)] = hedge
-                    data[a:index(x*2,   y, z*2+1)] = hedge
+                    for off_z=0, wall_width-1 do 
+                        for off_x=0, wall_width-1 do
+                            data[a:index(x*wall_width+off_x, y, z*wall_width+off_z)]     = hedge
+                        end
+                    end
+                end
+            end
+            -------------------------------------------------------Adds a roof
+            for off_z=0, wall_width-1 do 
+                for off_x=0, wall_width-1 do
+                    data[a:index(x*wall_width+off_x, 5, z*wall_width+off_z)]     = hedge
                 end
             end
         end
@@ -74,8 +86,8 @@ local function map_function(maze, player)
     vm:write_to_map(true)
     
     --player target coords
-    player_x = (math.floor(height/2)+(math.floor(height/2)+1)%2)*2
-    player_z = (math.floor(width/2)+(math.floor(width/2)+1)%2)*2
+    player_x = (math.floor(height/2)+(math.floor(height/2)+1)%2)*wall_width
+    player_z = (math.floor(width/2)+(math.floor(width/2)+1)%2)*wall_width
     
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
@@ -107,7 +119,7 @@ end
 local function cleanup(width, height)
     --Copy to the map
     local vm         = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*2+1,y=4,z=width*2+1})
+    local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*wall_width+1,y=4,z=width*wall_width+1})
     local data = vm:get_data()
     local a = VoxelArea:new{
         MinEdge = emin,
@@ -116,9 +128,9 @@ local function cleanup(width, height)
     local air = minetest.get_content_id("air")
     
     --zero it out
-    for z=0, width*2+1 do --z
+    for z=0, width*wall_width+1 do --z
         for y=0,4 do --
-            for x=0, height*2+1 do --x
+            for x=0, height*wall_width+1 do --x
                 data[a:index(x, y, z)] = air
             end
         end
@@ -127,8 +139,8 @@ local function cleanup(width, height)
     vm:write_to_map(true)
     
     --player target coords
-    player_x = (math.floor(height/2)+(math.floor(height/2)+1)%2)*2
-    player_z = (math.floor(width/2)+(math.floor(width/2)+1)%2)*2
+    player_x = (math.floor(height/2)+(math.floor(height/2)+1)%2)*wall_width
+    player_z = (math.floor(width/2)+(math.floor(width/2)+1)%2)*wall_width
     
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
