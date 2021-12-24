@@ -89,6 +89,7 @@ minetest.register_item(":", {
 	type = "none",
 	wield_image = "inv.png",
 	groups = {not_in_creative_inventory=1},
+	range = 0
 })
 
 --Style Registrations
