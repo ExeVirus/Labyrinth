@@ -7,14 +7,14 @@
 
 -- Node Registrations
 
-minetest.register_node("game:classic_ground",
+minetest.register_node("labyrinth:classic_ground",
 {
   description = "Ground Block",
   tiles = {"classic_ground.png"},
   light_source = 11,
 })
 
-minetest.register_node("game:classic_wall",
+minetest.register_node("labyrinth:classic_wall",
 {
   description = "Ground Block",
   tiles = {"classic_wall.png"},
@@ -34,9 +34,9 @@ local function map_function(maze, player)
         MinEdge = emin,
         MaxEdge = emax
     }
-    local ground =   minetest.get_content_id("game:classic_ground")
-    local wall =     minetest.get_content_id("game:classic_wall")
-    local invisble = minetest.get_content_id("game:inv")
+    local ground =   minetest.get_content_id("labyrinth:classic_ground")
+    local wall =     minetest.get_content_id("labyrinth:classic_wall")
+    local invisble = minetest.get_content_id("labyrinth:inv")
     local air =      minetest.get_content_id("air")
     
     --Set up the level itself
@@ -94,9 +94,9 @@ local function cleanup(width, height)
         MinEdge = emin,
         MaxEdge = emax
     }
-    local ground =   minetest.get_content_id("game:classic_ground")
-    local wall =     minetest.get_content_id("game:classic_wall")
-    local invisble = minetest.get_content_id("game:inv")
+    local ground =   minetest.get_content_id("labyrinth:classic_ground")
+    local wall =     minetest.get_content_id("labyrinth:classic_wall")
+    local invisble = minetest.get_content_id("labyrinth:inv")
     local air =      minetest.get_content_id("air")
     
     --Generally a good idea to zero it out

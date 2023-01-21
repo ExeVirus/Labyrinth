@@ -7,21 +7,21 @@
 
 -- Node Registrations
 
-minetest.register_node("game:grassy_grass",
+minetest.register_node("labyrinth:grassy_grass",
 {
   description = "Ground Block",
   tiles = {"grassy_grass.png"},
   light_source = 12,
 })
 
-minetest.register_node("game:grassy_dirt",
+minetest.register_node("labyrinth:grassy_dirt",
 {
   description = "Ground Block",
   tiles = {"grassy_dirt.png"},
   light_source = 12,
 })
 
-minetest.register_node("game:grassy_hedge",
+minetest.register_node("labyrinth:grassy_hedge",
 {
   description = "Ground Block",
   drawtype = "allfaces",
@@ -42,12 +42,12 @@ local function map_function(maze, player)
         MinEdge = emin,
         MaxEdge = emax
     }
-    local grass =   minetest.get_content_id("game:grassy_grass")
-    local dirt   =   minetest.get_content_id("game:grassy_dirt")
-    local hedge  =   minetest.get_content_id("game:grassy_hedge")
-    local invisble = minetest.get_content_id("game:inv")
+    local grass =   minetest.get_content_id("labyrinth:grassy_grass")
+    local dirt   =   minetest.get_content_id("labyrinth:grassy_dirt")
+    local hedge  =   minetest.get_content_id("labyrinth:grassy_hedge")
+    local invisble = minetest.get_content_id("labyrinth:inv")
     local air =      minetest.get_content_id("air")
-    
+
     --Set up the level itself
     for z=1, width do --z
         for x=1, height do --x
@@ -72,11 +72,11 @@ local function map_function(maze, player)
     end
     vm:set_data(data)
     vm:write_to_map(true)
-    
+
     --player target coords
     player_x = (math.floor(height/2)+(math.floor(height/2)+1)%2)*2
     player_z = (math.floor(width/2)+(math.floor(width/2)+1)%2)*2
-    
+
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
     local data = vm:get_data()
@@ -98,7 +98,7 @@ local function map_function(maze, player)
     end
     vm:set_data(data)
     vm:write_to_map(true)
-    
+
     --Finally, move  the player
     player:set_velocity({x=0,y=0,z=0})
     player:set_pos({x=player_x,y=32,z=player_z})
@@ -114,7 +114,7 @@ local function cleanup(width, height)
         MaxEdge = emax
     }
     local air = minetest.get_content_id("air")
-    
+
     --zero it out
     for z=0, width*2+1 do --z
         for y=0,4 do --
@@ -125,11 +125,11 @@ local function cleanup(width, height)
     end
     vm:set_data(data)
     vm:write_to_map(true)
-    
+
     --player target coords
     player_x = (math.floor(height/2)+(math.floor(height/2)+1)%2)*2
     player_z = (math.floor(width/2)+(math.floor(width/2)+1)%2)*2
-    
+
     --Lets now overwrite the channel for the player to fall into:
     local emin, emax = vm:read_from_map({x=player_x-1,y=4,z=player_z-1}, {x=player_x+1,y=32,z=player_z+1})
     local data = vm:get_data()

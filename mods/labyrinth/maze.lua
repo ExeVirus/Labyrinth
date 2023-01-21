@@ -55,7 +55,7 @@ local function getNextPoint(current_point,height,width,last_dir)
     while(1) do
         local dir = math.random(3)
         if last_dir == 3 then --east
-            
+
             if dir == 1 then --north
                 if current_point[1]-2 > 0 then
                     return {current_point[1]-2,current_point[2]}, 2
@@ -225,14 +225,14 @@ local function Generate_Maze(width, height, view)
             table.insert(maze[i], 0)
         end
     end
-    
+
 --initialize first point
     math.randomseed(os.time())
-    local x = math.random(math.floor(maze.width/2)-1)*2+1 
+    local x = math.random(math.floor(maze.width/2)-1)*2+1
     local y = math.random(math.floor(maze.height/2)-1)*2+1
     --local spot = findNextStarting(maze)
     maze[y][x] = 1
-    
+
 --Execute Algorithm
     wilsonsAlgo(maze, view)
 
