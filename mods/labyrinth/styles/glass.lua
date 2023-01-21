@@ -6,7 +6,7 @@
 -- \_____/ |_| \_||_|(___/ (___/
 
 ---- Node Registrations ----
-minetest.register_node("game:glass_glass",
+minetest.register_node("labyrinth:glass_glass",
 {
     description = "Glass",
     drawtype = "allfaces",
@@ -36,7 +36,7 @@ local function map_function(maze, player)
     }
     -- All nodes are stored as a 16-bit content ID in the map
     -- We need those exact numbers to manipulate the voxel manip
-    local glass = minetest.get_content_id("game:glass_glass")
+    local glass = minetest.get_content_id("labyrinth:glass_glass")
     local air = minetest.get_content_id("air")
     
     --Set up the level itself

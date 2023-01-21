@@ -6,7 +6,7 @@
 
 -- Node Registrations
 
-minetest.register_node("game:cave_rock",
+minetest.register_node("labyrinth:cave_rock",
 {
     description = "Rock Block",
     drawtype = "mesh",
@@ -25,12 +25,12 @@ minetest.register_node("game:cave_rock",
     },
     selection_box = {
         type = "fixed",
-        fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}, 
+        fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
     },
     tiles = {{name = "cave_stone.png", backface_culling=true}},
 })
 
-minetest.register_node("game:cave_ground",
+minetest.register_node("labyrinth:cave_ground",
 {
     description = "Ground Rock",
     drawtype = "mesh",
@@ -54,7 +54,7 @@ minetest.register_node("game:cave_ground",
     tiles = {{name = "cave_stone.png", backface_culling=true}},
 })
 
-minetest.register_node("game:cave_torch",
+minetest.register_node("labyrinth:cave_torch",
 {
     drawtype = "mesh",
     mesh = "torch.obj",
@@ -71,7 +71,8 @@ minetest.register_node("game:cave_torch",
         type = "wallmounted",
         wall_side = {-1/2, -1/2, -1/8, -1/8, 1/8, 1/8},
     },
-    on_rotate = false
+    on_rotate = false,
+    use_texture_alpha = "clip"
 })
 
 local clock = os.clock
@@ -93,11 +94,11 @@ local function map_function(maze, player)
         MinEdge = emin,
         MaxEdge = emax
     }
-    local wall =   minetest.get_content_id("game:cave_rock")
-    local ground   =   minetest.get_content_id("game:cave_ground")
-    local torch  =   minetest.get_content_id("game:cave_torch")
+    local wall =   minetest.get_content_id("labyrinth:cave_rock")
+    local ground   =   minetest.get_content_id("labyrinth:cave_ground")
+    local torch  =   minetest.get_content_id("labyrinth:cave_torch")
     local air =      minetest.get_content_id("air")
-    
+
      --player target coords
     player_x = (math.floor(height/2)+(math.floor(height/2)+1)%2)*3+1
     player_z = (math.floor(width/2)+(math.floor(width/2)+1)%2)*3+1
@@ -105,7 +106,7 @@ local function map_function(maze, player)
     player:set_physics_override({gravity=0})
     player:set_velocity({x=0,y=0,z=0})
     player:set_pos({x=player_x,y=1,z=player_z})
-    
+
     --Set up the level itself
     local torch_count = 0
     for z=1, width do --z
@@ -158,7 +159,7 @@ local function cleanup(width, height)
         MaxEdge = emax
     }
     local air = minetest.get_content_id("air")
-    
+
     --zero it out
     for z=0, width*3+1 do --z
         for y=0,5 do --

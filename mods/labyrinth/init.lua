@@ -45,8 +45,29 @@ local background_primary_c   = handleColor("laby_background_primary_c",   "#F0F0
 local background_secondary_c = handleColor("laby_background_secondary_c", "#D0D0D0FF")
 --End Settings Load
 
-local DefaultGenerateMaze = dofile(minetest.get_modpath("game") .. "/maze.lua")
+local modpath = minetest.get_modpath("labyrinth")
+
+local DefaultGenerateMaze = dofile(modpath .. "/maze.lua")
 local GenMaze = DefaultGenerateMaze
+
+-- Set mapgen to singlenode if not already
+
+minetest.set_mapgen_params('mgname', 'singlenode', true)
+
+
+-- Compatibility aliases
+
+for _, node in ipairs({
+	"inv",
+	"cave_ground", "cave_torch", "cave_rock",
+	"classic_ground", "classic_wall",
+	"club_walkway", "club_wall", "club_ceiling", "club_edge", "club_light", "club_ground",
+	"glass_glass",
+	"grassy_dirt", "grassy_hedge", "grassy_grass",
+}) do
+	minetest.register_alias("game:" .. node, "labyrinth:" .. node)
+end
+
 
 --Style registrations
 
@@ -76,28 +97,28 @@ function laby_register_style(name, music_name, map_from_maze, cleanup, genMaze)
 end
 
 --Common node between styles, used for hidden floor to fall onto
-minetest.register_node("game:inv",
+minetest.register_node("labyrinth:inv",
 {
   description = "Ground Block",
   drawtype = "airlike",
-  tiles = {"inv.png"},
+  tiles = {"blank.png"},
   light_source = 11,
 })
 
 --Override the default hand
 minetest.register_item(":", {
 	type = "none",
-	wield_image = "inv.png",
+	wield_image = "blank.png",
 	groups = {not_in_creative_inventory=1},
 	range = 0
 })
 
 --Style Registrations
-dofile(minetest.get_modpath("game") .. "/styles/classic.lua")
-dofile(minetest.get_modpath("game") .. "/styles/grassy.lua")
-dofile(minetest.get_modpath("game") .. "/styles/glass.lua")
-dofile(minetest.get_modpath("game") .. "/styles/cave.lua")
-dofile(minetest.get_modpath("game") .. "/styles/club.lua")
+dofile(modpath .. "/styles/classic.lua")
+dofile(modpath .. "/styles/grassy.lua")
+dofile(modpath .. "/styles/glass.lua")
+dofile(modpath .. "/styles/cave.lua")
+dofile(modpath .. "/styles/club.lua")
 
 local restart = styles[1].gen_map
 local cleanup = styles[1].cleanup
@@ -221,7 +242,7 @@ end
 
 local function to_game_menu(player)
     first_load = false
-    minetest.show_formspec(player:get_player_name(), "game:main", main_menu())
+    minetest.show_formspec(player:get_player_name(), "labyrinth:main", main_menu())
     cleanup(gwidth, gheight)
     if music then
         minetest.sound_fade(music, 0.5, 0)
@@ -237,13 +258,13 @@ end
 --
 -- onRecieveFields(player, formname, fields)
 --
--- player: player object 
+-- player: player object
 -- formname: use provided form name
 -- fields: standard recieve fields
 -- Callback for on_recieve fields
 ----------------------------------------------------------
 local function onRecieveFields(player, formname, fields)
-    if formname ~= "game:main" and formname ~= "" then return end
+    if formname ~= "labyrinth:main" and formname ~= "" then return end
     if formname == "" then --process the inventory formspec
         if fields.game_menu then
             minetest.after(0.15, function() to_game_menu(player) end)
@@ -254,7 +275,7 @@ local function onRecieveFields(player, formname, fields)
         end
         return
     end
-    
+
     local scroll_in = 0
     local width_in = 39
     local height_in = 74
@@ -274,7 +295,7 @@ local function onRecieveFields(player, formname, fields)
             local newStyle = tonumber(string.sub(name,6,-1))
             if newStyle ~= selectedStyle then --load level style
                 selectedStyle = newStyle
-                minetest.show_formspec(player:get_player_name(), "game:main", main_menu(width_in, height_in, scroll_in))
+                minetest.show_formspec(player:get_player_name(), "labyrinth:main", main_menu(width_in, height_in, scroll_in))
             end
         end
     end
@@ -302,13 +323,13 @@ local function onRecieveFields(player, formname, fields)
         end
         setup(player)
     elseif fields.quit then
-        minetest.after(0.10, function() minetest.show_formspec(player:get_player_name(), "game:main", main_menu(width_in, height_in, scroll_in)) end)
+        minetest.after(0.10, function() minetest.show_formspec(player:get_player_name(), "labyrinth:main", main_menu(width_in, height_in, scroll_in)) end)
         return
     elseif fields.labyexit then
         minetest.request_shutdown("Thanks for playing!")
         return
     else
-        --minetest.show_formspec(player:get_player_name(), "game:main", main_menu(width_in, height_in, scroll_in))
+        --minetest.show_formspec(player:get_player_name(), "labyrinth:main", main_menu(width_in, height_in, scroll_in))
     end
 end
 
@@ -322,9 +343,9 @@ local function safe_clear(w, l)
         MinEdge = emin,
         MaxEdge = emax
     }
-    local invisible = minetest.get_content_id("game:inv")
+    local invisible = minetest.get_content_id("labyrinth:inv")
     local air = minetest.get_content_id("air")
-    
+
     for z=0, l-10 do --z
         for y=0,10 do --y
             for x=0, w-10 do --x
@@ -346,7 +367,7 @@ minetest.register_on_joinplayer(
 function(player)
     safe_clear(300,300)
     player:set_properties({
-			textures = {"inv.png", "inv.png"},
+			textures = {"blank.png", "blank.png"},
 			visual = "upright_sprite",
 			collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.75, 0.3},
 			stepheight = 0.6,
@@ -364,7 +385,7 @@ function(player)
         }
     )
     player:set_inventory_formspec(pause_menu())
-    minetest.show_formspec(player:get_player_name(), "game:main", main_menu())
+    minetest.show_formspec(player:get_player_name(), "labyrinth:main", main_menu())
     music = minetest.sound_play("main", {
         gain = 1.0,   -- default
         fade = 0.8,   -- default, change to a value > 0 to fade the sound in

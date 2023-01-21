@@ -7,46 +7,44 @@
 
 -- Node Registrations
 
-minetest.register_node("game:club_ground",
+minetest.register_node("labyrinth:club_ground",
 {
   description = "Club Ground",
   tiles = {"club_ground.png"},
 })
 
-minetest.register_node("game:club_walkway",
+minetest.register_node("labyrinth:club_walkway",
 {
   description = "Club Walkway",
   tiles = {"club_walkway.png"},
 })
 
-minetest.register_node("game:club_wall",
+minetest.register_node("labyrinth:club_wall",
 {
   description = "Club Wall",
   tiles = {"club_wall.png"},
   drawtype = "nodebox",
-  node_box = {  
+  node_box = {
                       type = "fixed",
                       fixed = {-0.5,-0.499,-0.5,0.5,1.14,0.5},
                   },
   selection_box = {0,0,0,0.01,0.01,0.01},
-  use_texture_alpha = true,
 })
 
-minetest.register_node("game:club_ceiling",
+minetest.register_node("labyrinth:club_ceiling",
 {
   description = "Club ceiling",
   tiles = {"club_ceiling.png"},
 })
 
-minetest.register_node("game:club_edge",
+minetest.register_node("labyrinth:club_edge",
 {
   description = "Club Edge",
   tiles = {"club_edge.png"},
   walkable = false,
-  use_texture_alpha = true,
 })
 
-minetest.register_node("game:club_light",
+minetest.register_node("labyrinth:club_light",
 {
   description = "Club light",
   tiles = {"club_light.png"},
@@ -93,7 +91,7 @@ local function map_function(maze, player)
     local loc_maze = maze
     width = loc_maze.width
     height = loc_maze.height
-    
+
     baseParticleDef.amount = math.floor(width*height/98) --rouhgly good :)
     --Copy to the map
     local vm         = minetest.get_voxel_manip()
@@ -103,16 +101,16 @@ local function map_function(maze, player)
         MinEdge = emin,
         MaxEdge = emax
     }
-    local club_ground  = minetest.get_content_id("game:club_ground")
-    local club_wall    = minetest.get_content_id("game:club_wall")
-    local club_ceiling = minetest.get_content_id("game:club_ceiling")
-    local club_light   = minetest.get_content_id("game:club_light")
-    local club_walkway = minetest.get_content_id("game:club_walkway")
-    local club_edge    = minetest.get_content_id("game:club_edge")
+    local club_ground  = minetest.get_content_id("labyrinth:club_ground")
+    local club_wall    = minetest.get_content_id("labyrinth:club_wall")
+    local club_ceiling = minetest.get_content_id("labyrinth:club_ceiling")
+    local club_light   = minetest.get_content_id("labyrinth:club_light")
+    local club_walkway = minetest.get_content_id("labyrinth:club_walkway")
+    local club_edge    = minetest.get_content_id("labyrinth:club_edge")
     local air    =   minetest.get_content_id("air")
-    
+
     minetest.set_timeofday(0.8)
-    
+
     --player target coords
     player_x = (math.floor(height/2)+(math.floor(height/2)+1)%2)*2
     player_z = (math.floor(width/2)+(math.floor(width/2)+1)%2)*2
@@ -121,7 +119,7 @@ local function map_function(maze, player)
     player:set_physics_override({gravity=0})
     player:set_velocity({x=0,y=0,z=0})
     player:set_pos({x=player_x,y=1.5,z=player_z})
-    
+
     --Set up the level itself
     for z=1, width do --z
         for x=1, height do --x
@@ -209,7 +207,7 @@ local function cleanup(width, height)
     minetest.delete_particlespawner(particleID[6])
     minetest.delete_particlespawner(particleID[7])
     minetest.delete_particlespawner(particleID[8])
-    
+
     --Delete the map
     local vm         = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map({x=0,y=0,z=0}, {x=height*2+1,y=10,z=width*2+1})
@@ -219,7 +217,7 @@ local function cleanup(width, height)
         MaxEdge = emax
     }
     local air = minetest.get_content_id("air")
-    
+
     --zero it out
     for z=0, width*2+1 do --z
         for y=0,10 do --
